@@ -168,6 +168,13 @@ class Bundle(base.BudyBase):
         return discount(*args, **kwargs)
 
     @classmethod
+    def eval_taxes(cls, *args, **kwargs):
+        taxes = appier.conf("BUDY_TAXES", None)
+        if not taxes: return 0.0
+        taxes = eval(taxes)
+        return taxes(*args, **kwargs)
+
+    @classmethod
     def eval_shipping(cls, *args, **kwargs):
         shipping = appier.conf("BUDY_SHIPPING", None)
         if not shipping: return 0.0
@@ -331,9 +338,12 @@ class Bundle(base.BudyBase):
         return discount
 
     def build_taxes(self):
-        taxes = appier.conf("BUDY_TAXES", None)
-        if not taxes: return 0.0
-        return 0.0
+        return self.__class__.eval_taxes(
+            self.sub_total,
+            self.taxes,
+            self.quantity,
+            self
+        )
 
     def build_shipping(self):
         return self.__class__.eval_shipping(

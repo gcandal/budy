@@ -581,7 +581,7 @@ class Product(base.BudyBase):
             params = params
         )
         total = result["total"]
-        return total["price_final"]
+        return total["price"]
 
     def get_currency(self, currency = None):
         if not self.price_provider: return self.currency or currency
